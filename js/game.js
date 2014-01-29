@@ -55,12 +55,24 @@ window.onload = function(){
 //  enemy tijd teller, elke zoveel tijdtellen een nieuw enemy
 	window.tijdTeller = 0;
 //  enemy sizes
-	window.enemyHeight = 150;
-	window.enemyWidth = 150;
+	window.enemyHeight = 100;
+	window.enemyWidth = 100;
 	//enemyArray[0][1];
 //  facebook enemy
 	window.enemy_facebook = new Image();
 	enemy_facebook.src = "img/enemy_facebook.png";
+
+	window.enemy_whatsapp = new Image();
+	enemy_whatsapp.src = "img/enemy_whatsapp.png";
+
+	window.enemy_twitter = new Image();
+	enemy_twitter.src = "img/enemy_twitter.png";
+
+	window.enemy_voetbal = new Image();
+	enemy_voetbal.src = "img/enemy_voetbal.png";
+
+	window.enemy_sms = new Image();
+	enemy_sms.src = "img/enemy_sms.png";
 
 
 //  enemy soorten array vullen
@@ -68,6 +80,10 @@ window.onload = function(){
 	window.enemySoortArray = new Array();
 
 	enemySoortArray.push(enemy_facebook);
+	enemySoortArray.push(enemy_whatsapp);
+	enemySoortArray.push(enemy_twitter);
+	enemySoortArray.push(enemy_voetbal);
+	enemySoortArray.push(enemy_sms);
 
 
 //  als toets word ingedrukt dan keyboardListener functie aanroepen
@@ -75,7 +91,7 @@ window.onload = function(){
 
 //  canvas game achtergrond plaatje
 	window.bg_canvasGameBackgroundImage = new Image();
-	bg_canvasGameBackgroundImage.src = "img/game_background.png";
+	bg_canvasGameBackgroundImage.src = "img/game_background2.png";
 
 //  Setinvals
 	window.startFunctionsInterval;
@@ -112,7 +128,7 @@ function startGame() {
 	// set startscherm op display none;
 	startCanvas.style.display = 'none';
 	canvas.style.display = 'inline';
-	startFunctionsInterval = setInterval(gameFunctions, 25);
+	startFunctionsInterval = setInterval(gameFunctions, 10);
 	gameStatus = 1;
 
 } // einde startgame()
@@ -120,6 +136,7 @@ function startGame() {
 function gameFunctions() {
 	//console.log('in de gameFunctions()');
 	reDraw();
+	collisionDetection();
 }
 
 function resumeGame() {
@@ -184,6 +201,7 @@ function reDraw() {
 
 } // einde redraw()
 
+// tekent auto
 function drawCar() {
 
 	// auto links
@@ -204,31 +222,32 @@ function drawCar() {
 
 } // einde drawCar();
 
+// maakt nieuwe enemy
 function createEnemy() {
 
 	// xPos = x positie / yPos = y positie / scaleFactor = schaalfactor(grootte) / row = welke rijbaan enemy zit / status = status (0 leven, 1 dood/weg)
 	enemy = new Object();
 
-	//enemy.row =  Math.floor(Math.random()* 3 );
-	enemy.row = 1;
+	enemy.row =  Math.floor(Math.random()* 3 );
+	//enemy.row = 1;
 
 
 	console.log('enemy.row in create enenmy ' + enemy.row);
 	
 	// als het straks random is
-	//enemy.soort = Math.round( (Math.random()*4) );
-	enemy.soort = 0; // facebook nu
+	enemy.soort = Math.floor( (Math.random()*5) );
+	//enemy.soort = 0; // facebook nu
 
 	if(enemy.row == 0) {
-		enemy.xPos = 243;
+		enemy.xPos = 150;
 		enemy.yPos = 90; 
 
 	} else if (enemy.row == 1){
-		enemy.xPos = 318;
+		enemy.xPos = 350;
 		enemy.yPos = 90; 
 
 	} else if (enemy.row == 2) {
-		enemy.xPos = 418;
+		enemy.xPos = 546;
 		enemy.yPos = 90; 
 
 	}
@@ -241,11 +260,15 @@ function createEnemy() {
 }
 
 
-
 // tekent de enemies
 function drawEnemies() {
 	
 	tijdTeller++;
+
+	if( (tijdTeller % 200) == 0) {
+
+		createEnemy();
+	}
 	if(gameProgressie == 0) {
 
 		
@@ -262,16 +285,15 @@ function drawEnemies() {
 
 					enemyArray[i].scaleFactor += 0.01;
 				}
-
 				if(enemyArray[i].yPos <= 400 ) {
-					volgPad(i);
+					//volgPad(i);
 					enemyArray[i].yPos+=1;
 				} // einde if ypos >= 400
 				else {
 					enemyArray[i].levend = false;
 				}
 
-				canvasContext.drawImage( enemySoortArray[enemyArray[i].soort], enemyArray[i].xPos, enemyArray[i].yPos, enemyWidth*enemyArray[i].scaleFactor, enemyHeight*enemyArray[i].scaleFactor );
+				canvasContext.drawImage( enemySoortArray[enemyArray[i].soort], enemyArray[i].xPos - (enemyWidth*enemyArray[i].scaleFactor / 2), enemyArray[i].yPos, enemyWidth*enemyArray[i].scaleFactor, enemyHeight*enemyArray[i].scaleFactor );
 
 			} // einde if enemy is levend
 				
@@ -291,24 +313,7 @@ function drawEnemies() {
 
 } // einde drawEnemies
 
-// laat enemies het juiste pad volgen
-function volgPad(a) {
-	console.log(a);
-	var y = enemyArray[a].yPos;
-			console.log(y);	
-	if( enemyArray[a].row == 1) {
-		if ( (y % 4) == 0 && y < 290) {	
 
-/*		if( y == 90 || y == 95 || y == 100 || y == 105 || y == 110 || y == 115 || y == 120 || y == 125 || y == 130 || y == 135 || 
-			y == 140 || y == 145 || y == 150 || y == 155 || y == 160 || y == 165 || y == 170 || y == 175 || y == 180 || y == 190 || y == 195 || y == 200 ||
-			y == 205 || y == 210 || y == 215 || y == 220 || y == 225 || y == 230 || y == 235 || y == 240 || y == 245 || y == 250 || y == 255 || y == 260 || 
-			y == 265 || y == 270 || )  {*/
-
-
-			enemyArray[a].xPos -= 1;
-		} // einde if xpos ==
-	} // einde if row =- 1 
-} // einde volgpad
 
 
 // tekent het startscherm
@@ -341,17 +346,27 @@ function drawPauzeScherm() {
 
 
 
+// dump code niet meer nodig misschien handig
 
 
+// laat enemies het juiste pad volgen
+/*function volgPad(a) {
+	console.log(a);
+	var y = enemyArray[a].yPos;
+			console.log(y);	
+	if( enemyArray[a].row == 1) {
+		if ( (y % 4) == 0 && y < 290) {	
+
+		if( y == 90 || y == 95 || y == 100 || y == 105 || y == 110 || y == 115 || y == 120 || y == 125 || y == 130 || y == 135 || 
+			y == 140 || y == 145 || y == 150 || y == 155 || y == 160 || y == 165 || y == 170 || y == 175 || y == 180 || y == 190 || y == 195 || y == 200 ||
+			y == 205 || y == 210 || y == 215 || y == 220 || y == 225 || y == 230 || y == 235 || y == 240 || y == 245 || y == 250 || y == 255 || y == 260 || 
+			y == 265 || y == 270 || )  {
 
 
-
-
-
-
-
-
-
+			enemyArray[a].xPos -= 1;
+		} // einde if xpos ==
+	} // einde if row =- 1 
+} // einde volgpad*/
 
 
 /*
