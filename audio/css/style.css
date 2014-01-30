@@ -1,0 +1,59 @@
+body {
+    background-color: #EFEFEF;
+    text-align: center; 
+    padding: 20px; 
+    color: #575757; 
+    font: 14px/21px Arial,Helvetica,sans-serif;
+}
+ 
+a {
+    color: #B93F14;
+}
+ 
+a:hover {
+    text-decoration: none;
+}
+ 
+ol {
+    width: 600px; 
+    text-align: left; 
+    margin: 15px auto
+}
+
+
+canvas {
+
+    border: 1px solid #000;
+    background-color: #fff;
+/*    cursor: none;*/
+
+    box-shadow: 2px 2px 19px #aaa;
+    -o-box-shadow: 2px 2px 19px #aaa;
+    -webkit-box-shadow: 2px 2px 19px #aaa;
+    -moz-box-shadow: 2px 2px 19px #aaa;
+
+}
+
+#startScreen canvas {
+    
+    background-color: #abc;
+
+}
+
+#gameCanvas canvas {
+
+    background-image: url('img/game_background.png');
+}
+
+#canvasDiv {
+
+    top: 100px;
+    width: 700px;
+    height: 393px;
+
+    border: 1px solid #000;
+    margin: 0px auto;
+
+
+}
+
