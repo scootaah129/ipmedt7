@@ -1,3 +1,71 @@
+$( document ).ready(function() {
+    console.log( "ready!" );
+
+
+    //var log = $('#log')[0],
+    window.pressKeys = new Array();
+
+    //window.pressKeys = new Array();
+    window.keynummer = false;
+
+/*	$(document.body).keydown(function (evt) {
+
+	
+		for(var i = 0; i < pressedKeys.length; i++) {
+			
+			keynummer = true;
+		}
+
+		if (!keynummer) {
+
+			console.log("push " + evt.keyCode);
+			pressedKeys.push(evt.keyCode);
+
+		}
+		else {
+			keynummer = false;
+		}
+	   	
+	});
+
+	$(document.body).keyup(function (evt) {
+
+		if(pressedKeys.length > 0) {
+			for(var i = 0; i < pressedKeys.length; i++) {
+
+				if( pressedKeys[i] == evt.keyCode  ) {
+					console.log("splice " + evt.keyCode);
+					pressedKeys.splice(i);
+
+				}
+			}
+		}
+	    
+	});*/
+
+	$(document.body).keydown(function (evt) {
+	    //var li = pressedKeys[evt.keyCode];
+	    //if (!li) {
+			pressKeys[evt.keyCode] = true;
+	    //}
+	   // $(li).text('Down: ' + evt.keyCode);
+	   // $(li).removeClass('key-up');
+	});
+
+	$(document.body).keyup(function (evt) {
+	    
+		pressKeys[evt.keyCode] = false;
+	    //var li = pressedKeys[evt.keyCode];
+	    //if (!li) {
+    	//	pressKeys[evt.keyCode] = true;
+	    //   	li = log.appendChild(document.createElement('li'));
+	    
+	});
+
+});
+
+
+
 // als scherm wordt geladen
 window.onload = function(){
 
@@ -144,10 +212,10 @@ window.onload = function(){
 
 
 //  als toets word ingedrukt dan keyboardListener functie aanroepen
-	window.onkeydown = keyboardListenerKeydown;
-	window.onkeyup = keyboardListenerKeyUp;
+	//window.onkeydown = keyboardListenerKeydown;
+	//window.onkeyup = keyboardListenerKeyUp;
 
-	window.onkeypress = keyboardListenerKeyPress;
+	//window.onkeypress = keyboardListenerKeyPress;
 
 
 //  canvas game achtergrond plaatje
@@ -194,25 +262,24 @@ function restartGame() {
 	autoPositie = 1;
 	tijdTeller = 0;
 	gameProgressie = 0;	
-	messageY = 401;
-	messageX = 57;
+	//messageY = 401;
+	messageY = 50;
+	messageX = -591;
+	//messageX = 57;
 	seconden = 0;
 	autoSpeed = 110;
 	startFunctionsInterval = setInterval(gameFunctions, 25);
 	tijdSecondenInterval = setInterval(everySecond, 1000);
 
-
-
-
 }
 
 function endGame() {
 
-	gameStatus = 3;
+/*	gameStatus = 3;
 	window.clearInterval(startFunctionsInterval);
 	window.clearInterval(tijdSecondenInterval);
 
-	drawEindScherm();
+	drawEindScherm();*/
 
 }
 
@@ -223,6 +290,7 @@ function gameFunctions() {
 		reDraw();
 		collisionDetection();
 		checkSpeed();
+		checkKeyCodes();
 	}
 }
 
@@ -240,7 +308,6 @@ function collisionDetection() {
 			if (enemyArray[i].yPos < autoPos.yPos + 30) {
 			// if als er botsing is
 				if(  enemyArray[i].yPos + enemyArray[i].scaleFactor*enemyHeight  >= autoPos.yPos  && enemyArray[i].xPos <= (autoPos.xPos + 61) && enemyArray[i].xPos + (enemyArray[i].scaleFactor * enemyWidth) >= (autoPos.xPos + 61)  ) {
-		        	console.log("collision");
 					endGame();
 				} // als er botsing is geweest
 			}
@@ -251,34 +318,50 @@ function collisionDetection() {
 
 } // einde collisiondetection()
 
-function keyboardListenerKeydown(e) {
-	// 37 links / 38 omhoog / 39 rechts / 40 beneden / 80 P / 27 ESC / t 84 / y 89
 
-	var code = e.keyCode ? e.keyCode : e.which;
+function checkKeyCodes() {
+
 
 	if(gameStatus == 1) {
-	    if (code === 37) { //key left
-	        if(autoPositie === 0) {
 
-	        	endGame();
-	        	console.log("teveel naar lnks");
-	        }
-	        if( autoPositie === 1 || autoPositie === 2) {
-	    		autoPositie--;	
-	        } 
 
-	    } else if (code === 39) { //key right
+		if(pressKeys[38]) {
 
-	        if(autoPositie === 2) {
-	        	console.log("teveel naar rechts");
-	        	endGame();
-	        }
-	        if( autoPositie === 0 || autoPositie === 1) {
-        		autoPositie++;	
-        	}
-	   	}
+			autoSpeed++;
+		}
+	
+    if (pressKeys[37]) { //key left
+    	if(autoPositie === 0) {
 
-	   	if(code == 38) {
+    	endGame();
+    }
+    	if( autoPositie === 1 || autoPositie === 2) {
+		autoPositie--;	
+    } 
+
+	} else if (pressKeys[39]) { //key right
+
+    if(autoPositie === 2) {
+    	endGame();
+    }
+    if( autoPositie === 0 || autoPositie === 1) {
+		autoPositie++;	
+	}
+	}
+	
+
+
+
+	//console.log("length  " + pressedKeys.length);
+/*	for(var i = 0; i < pressedKeys.length; i++) {
+
+		var code = pressedKeys[i];
+
+		console.log('checkkeycodes ' + i);
+
+	}*/
+
+	   /*	if(code == 38) {
 
 	   		autoSpeed++;
 	   		speedPressed = true;
@@ -293,10 +376,38 @@ function keyboardListenerKeydown(e) {
 	   	else {
 			
 			speedPressed = false
-	   	}	
+	   	}
 
+	    if (code === 37) { //key left
+	        if(autoPositie === 0) {
+
+	        	endGame();
+	        }
+	        if( autoPositie === 1 || autoPositie === 2) {
+	    		autoPositie--;	
+	        } 
+
+	    } else if (code === 39) { //key right
+
+	        if(autoPositie === 2) {
+	        	endGame();
+	        }
+	        if( autoPositie === 0 || autoPositie === 1) {
+        		autoPositie++;	
+        	}
+	   	}	*/
 	   	
-   	}
+   	} // einde if gamestatus
+
+}
+
+
+function keyboardListenerKeydown(e) {
+	// 37 links / 38 omhoog / 39 rechts / 40 beneden / 80 P / 27 ESC / t 84 / y 89
+
+	var code = e.keyCode ? e.keyCode : e.which;
+
+
 
     // P knop gedrukt
     if (code == 80) {
@@ -338,10 +449,10 @@ function keyboardListenerKeyUp(e) {
 
 }
 
-function keyboardListenerKeyPress(e) {
+/*function keyboardListenerKeyPress(e) {
 	alert();
 	console.log(e);
-}
+}*/
 
 
 // teken functies
@@ -511,26 +622,26 @@ function drawMessages() {
 
 		if( currentMessageDrawing && messageActive) {
 
-			if(messageY >= 280 && currentMessageDrawing) {
-				messageY -= 8;
-
+			console.log(messageX);
+			if(messageX <= 700 && currentMessageDrawing) {
+				messageX += 7;
 			}
 
 			canvasContext.drawImage(enemyMessages[currentMessage], messageX, messageY, messageWidth, messageHeight);
 
 		} // einde if secopnden
 		else {
-			if(messageY <= 400 && currentMessageDrawing) {
+/*			if(messageX <= 400 && currentMessageDrawing) {
 
-				messageY += 5;
+				messageX += 5;
 				canvasContext.drawImage(enemyMessages[currentMessage], messageX, messageY , messageWidth, messageHeight);
 
 			}
-			else {
+			else {*/
 
-				messageY = 400;
+				messageX = -591;
 				currentMessageDrawing = false;
-			}
+			//}
 		}
 
 	} // einde if gamestatus == 1 
@@ -552,8 +663,8 @@ function secondenPlusPlus() {
 
 	if(gameStatus == 1) {
 
-		if(seconden % 6 == 0 && seconden > 3) {
-			if(seconden > 6) {
+		if(seconden % 8 == 0 && seconden > 3) {
+			if(seconden > 9) {
 				currentMessage++;
 			}
 			playMusic();
@@ -564,7 +675,7 @@ function secondenPlusPlus() {
 
 		}
 
-		if(messageActive && seconden == messageActivesec + 2)
+		if(messageActive && seconden == messageActivesec + 4)
 		{
 			messageActive = false;
 
@@ -583,7 +694,7 @@ function secondenPlusPlus() {
 
 function playMusic() {
 	
-	message_geluid.play();
+	//message_geluid.play();
 
 }
 
@@ -591,19 +702,19 @@ function checkSpeed() {
 
 	if(gameStatus == 1 ) {
 
+
+
 		if(autoSpeed < 100 || autoSpeed > 120 ) {
 
 			badSpeed = true;
 		}
 
 		if ( autoSpeed > 100 && autoSpeed < 120  ) {
-			console.log(badSpeed);
 			badSpeed = false;
 			currentSecSpeed = 0;
 		}
 
 		if(currentSecSpeed > 2) {
-        	console.log("currentSecSpeed");
 			endGame();
 		}
 
@@ -619,7 +730,7 @@ function checkSpeed() {
 
 function spawnEnemies() {
 
-	if(gameStatus == 1) {
+	if(gameStatus == 2) {
 		if(seconden % 1 == 0) {
 			var  randomnummer = Math.floor( (Math.random()*4) );
 			switch (randomnummer)
