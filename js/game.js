@@ -40,7 +40,6 @@ window.onload = function(){
 	window.autoRechtsx = 500;
 	window.autoRechtsy = 290;
 
-
 //  auto in het midden
 	window.autoPositie = 1;
 
@@ -114,7 +113,14 @@ window.onload = function(){
 //  enemy message array 
 
 	window.currentMessage = 0;
+	window.currentMessageDrawing = false;
 	window.messageY = 0;
+
+	window.messageHeight  = 140;
+	window.messageWidth = 591;
+
+	window.messageActive = false;
+	window.messageActivesec = 0;
 	window.enemyMessages = new Array();
 
 	enemyMessages.push(enemyMessage_1);
@@ -176,9 +182,9 @@ function restartGame() {
 	autoPositie = 1;
 	tijdTeller = 0;
 	gameProgressie = 0;	
-	messageY = 0;
+	messageY = -219;
 	seconden = 0;
-	startFunctionsInterval = setInterval(gameFunctions, 10);
+	startFunctionsInterval = setInterval(gameFunctions, 25);
 	tijdSecondenInterval = setInterval(everySecond, 1000);
 
 }
@@ -194,7 +200,7 @@ function endGame() {
 }
 
 function gameFunctions() {
-	//console.log('in de gameFunctions()');
+
 	if(gameStatus == 1) {
 		reDraw();
 		collisionDetection();
@@ -211,8 +217,6 @@ function collisionDetection() {
 	for(var i = 0; i < enemyArray.length; i++ ) {
 
 		if( enemyArray[i].levend) {
-			//console.log('auto xpos+61 =  ' + (autoPos.xPos + 61) +  ' enemy xmax = ' + (enemyArray.xPos + (enemyArray[i].scaleFactor * enemyWidth)) );
-			//console.log('scale factor = ' + enemyArray[i].scaleFactor + '   enemy width = ' + enemyWidth);
 
 			if (enemyArray[i].yPos < autoPos.yPos + 30) {
 			// if als er botsing is
@@ -275,12 +279,9 @@ function keyboardListener(e) {
     if(code == 84) {
     	if(gameStatus == 3) {
     	createEnemy(); }
-    	//console.log('createEnemy()');
     }
     // Y knop ingedrukt
     if(code == 89) {
-
-    	console.log(auto);
 
     }
 } // einde 
@@ -326,8 +327,6 @@ function createEnemy(row) {
 	enemy = new Object();
 
 	enemy.row = row;
-	//enemy.row =  Math.floor(Math.random()* 3 );
-	//enemy.row = 1;
 
 	// als het straks random is
 	enemy.soort = Math.floor( (Math.random()*5) );
@@ -347,7 +346,9 @@ function createEnemy(row) {
 
 	}
 
-	enemy.scaleFactor = 1;
+	enemy.speed = 1;
+
+	enemy.scaleFactor = 0.3;
 	enemy.levend = true;
 
 	enemyArray.push(enemy);
@@ -357,36 +358,41 @@ function createEnemy(row) {
 // tekent de enemies
 function drawEnemies() {
 	
-	tijdTeller++;
+	if(gameStatus == 1) {
+		tijdTeller++;
 
-		
-	for(var i = 0; i < enemyArray.length; i++ ) {
-		//console.log('in de drawEnemies() for loop');
-		// img, x, y, width, height
-		//console.log( 'enemyArray .type ' + enemyArray[i].type  );//enemySoortArray[enemyArray[i].type].src);
-		
-		// check enemy.levend = true
-		if(enemyArray[i].levend) {
-
-/*			if(enemyArray[i].scaleFactor <= 1 && (tijdTeller % 2) == 0) {
-
-				enemyArray[i].scaleFactor += 0.01;
-			}*/
-			if(enemyArray[i].yPos <= 400 ) {
-				//volgPad(i);
-				enemyArray[i].yPos+=1;
-			} // einde if ypos >= 400
-			else {
-				enemyArray[i].levend = false;
-				//enemyArray.splice(i, 1);
-			}
-
-			canvasContext.drawImage( enemySoortArray[enemyArray[i].soort], enemyArray[i].xPos - (enemyWidth*enemyArray[i].scaleFactor / 2), enemyArray[i].yPos, enemyWidth*enemyArray[i].scaleFactor, enemyHeight*enemyArray[i].scaleFactor );
-
-		} // einde if enemy is levend
+		for(var i = 0; i < enemyArray.length; i++ ) {
 			
-	} // einde for loop;
+			// check enemy.levend = true
+			if(enemyArray[i].levend) {
 
+				if(enemyArray[i].scaleFactor < 1) {
+
+					enemyArray[i].scaleFactor += 0.01; 
+				}
+
+				if(enemyArray[i].yPos <= 400 ) {
+					//volgPad(i);
+					console.log('enemy speed ' + enemyArray[0].speed); 
+					if( enemyArray[i].yPos % 30 == 0 ) {
+					//enemyArray[i].yPos == 20 ||enemyArray[i].yPos == 40 || enemyArray[i].yPos == 80 || enemyArray[i].yPos == 100 || enemyArray[i].yPos == 120 || enemyArray[i].yPos == 150 || enemyArray[i].yPos == 175 || enemyArray[i].yPos == 200 || enemyArray[i].yPos == 250 || enemyArray[i].yPos == 300) {
+
+						enemyArray[i].speed++;
+					}
+
+					enemyArray[i].yPos+= enemyArray[i].speed;
+				} // einde if ypos >= 400
+				else {
+					enemyArray[i].levend = false;
+					//enemyArray.splice(i, 1);
+				}
+
+				canvasContext.drawImage( enemySoortArray[enemyArray[i].soort], enemyArray[i].xPos - (enemyWidth*enemyArray[i].scaleFactor / 2), enemyArray[i].yPos, enemyWidth*enemyArray[i].scaleFactor, enemyHeight*enemyArray[i].scaleFactor );
+
+			} // einde if enemy is levend
+				
+		} // einde for loop;
+	} // eidne if gamestatus
 
 } // einde drawEnemies
 
@@ -435,28 +441,46 @@ function drawMessages() {
 
 	if(gameStatus == 1) {
 
-		if( seconden >= 3 && seconden <= 6 || 
+		if( currentMessageDrawing && messageActive
+/*
+			 seconden >= 3 && seconden <= 6 || 
 			seconden >= 8 && seconden <= 12 || 
 			seconden >= 14 && seconden <= 16 ||
 			seconden >= 18 && seconden <= 20 ||
 			seconden >= 22 && seconden <= 23 ||
 			seconden >= 25 && seconden <= 28 ||
 			seconden >= 30 && seconden <= 31 ||
-			seconden >= 33 && seconden <= 36
+			seconden >= 33 && seconden <= 36*/
 
 			) {
-			
-			canvasContext.drawImage(enemyMessages[currentMessage], 57, messageY);
 
+
+				if(messageY < 0 && currentMessageDrawing) {
+					messageY += 5;
+				}
+
+				canvasContext.drawImage(enemyMessages[currentMessage], 57, messageY, messageWidth, messageHeight);
 
 		} // einde if secopnden
+		else {
+			if(messageY >= -140 && currentMessageDrawing) {
+
+				messageY -= 2;
+				canvasContext.drawImage(enemyMessages[currentMessage], 57, messageY , messageWidth, messageHeight);
+
+			}
+			else {
+
+				messageY = -140;
+				currentMessageDrawing = false;
+			}
+		}
 
 	} // einde if gamestatus == 1 
 
 }
 
 function everySecond() {
-
 	spawnEnemies();
 	secondenPlusPlus();
 }
@@ -465,20 +489,24 @@ function secondenPlusPlus() {
 
 	if(gameStatus == 1) {
 
-		if (seconden == 6 || seconden == 12 || seconden == 16 || seconden == 20 || seconden == 23 || seconden == 28 || seconden == 31 || seconden == 36) {
-			currentMessage++;
+		if(seconden % 5 == 0 && seconden > 4) {
+			if(seconden > 6) {
+				currentMessage++;
+			}
+
+			messageActivesec = seconden;
+
+			messageActive = true;
+			currentMessageDrawing = true;
 		}
 
+		if(messageActive && seconden == messageActivesec + 2)
+		{
+			messageActive = false;
 
-		if (seconden == 10 || seconden == 20) {
-
-			messageY += 15;
 		}
-
 
 		seconden++;
-		console.log('seconde asdfsaf: ' + seconden + '  GANMEPROGRESSIE : ' + gameProgressie + '   enemy array length' +  enemyArray.length  );
-
 
 	}
 
@@ -486,8 +514,35 @@ function secondenPlusPlus() {
 
 function spawnEnemies() {
 
-	// draw 0 en 1
-	if (seconden == 6 || seconden == 16 || seconden == 26 || seconden == 34) {
+	if(gameStatus == 1) {
+		if(seconden % 2 == 0) {
+			var  randomnummer = Math.floor( (Math.random()*4) );
+			switch (randomnummer)
+			{
+			case 0:
+			  createEnemy(0);
+			  createEnemy(1);
+			  break;
+			case 1:
+			  createEnemy(1);
+			  createEnemy(2);
+			  break;
+			case 2:
+			  createEnemy(0);
+			  createEnemy(2);
+			  break;
+			case 3:
+			  createEnemy(1);
+			  break;
+			case 4:
+			  createEnemy(0);
+			  break;
+		}
+	}
+}
+
+/*	// draw 0 en 1
+	if (seconden == 3 || seconden == 6 || seconden == 16 || seconden == 26 || seconden == 34) {
 
 		createEnemy(0);
 		createEnemy(1);
@@ -526,96 +581,6 @@ function spawnEnemies() {
 	if (seconden == 18) {
 
 		createEnemy(2);
-	}
-
-
-}
-
-
-
-// dump code niet meer nodig misschien handig
-
-
-// laat enemies het juiste pad volgen
-/*function volgPad(a) {
-	console.log(a);
-	var y = enemyArray[a].yPos;
-			console.log(y);	
-	if( enemyArray[a].row == 1) {
-		if ( (y % 4) == 0 && y < 290) {	
-
-		if( y == 90 || y == 95 || y == 100 || y == 105 || y == 110 || y == 115 || y == 120 || y == 125 || y == 130 || y == 135 || 
-			y == 140 || y == 145 || y == 150 || y == 155 || y == 160 || y == 165 || y == 170 || y == 175 || y == 180 || y == 190 || y == 195 || y == 200 ||
-			y == 205 || y == 210 || y == 215 || y == 220 || y == 225 || y == 230 || y == 235 || y == 240 || y == 245 || y == 250 || y == 255 || y == 260 || 
-			y == 265 || y == 270 || )  {
-
-
-			enemyArray[a].xPos -= 1;
-		} // einde if xpos ==
-	} // einde if row =- 1 
-} // einde volgpad*/
-
-
-/*
-function setupGame() {
-
-	alert('gameCanvas');
-    var gameCanvas = document.getElementById("gameCanvas");
-    //avatar image    
-    setInterval(handleTick, 25);
-
-    var avatarImage = new Image();
-    avatarImage.src = "avatar.png";
-
-
-    avatarImage.onload = function () {
-	    //gameCanvas.getContext("2d").drawImage(avatarImage, Math.random() * 100, Math.random() * 100);
-	    gameCanvas.addEventListener("mousemove", handleMouseMomement);
-	}
-
-}	*/
- 
-/*function handleMouseMomement(mouseEvent) {
-
-	avatarX = mouseEvent.offsetX;
-    avatarY = mouseEvent.offsetY;
+	}*/
 
 }
-*/
-
-/*function handleTick() {
-
-    enemyY += 5;
-
-    //gameCanvas.getContext("2d").clearRect(0, 0, width, height);
-	var gameCanvas = document.getElementById("gameCanvas");
-
-	var avatarImage = new Image();
-	 
-	avatarImage.src = "avatar.png";
-
-	// clear scherm
-	
-	avatarImage.onload = function() {
-		//gameCanvas.getContext("2d").clearRect(0, 0, width, height);
-		gameCanvas.getContext("2d").drawImage(avatarImage, avatarX, avatarY);
-	}
-
-	    //enemy image
-    var enemyImage = new Image();
-    enemyImage.src = "enemy.png";
-
-	enemyImage.onload = function() {
-
-		if(enemyY >= 400) {
-			gameCanvas.getContext("2d").drawImage(enemyImage,  250, 0 ) ;
-			enemyY = 0;
-
-		} // einde if
-		else {
-			gameCanvas.getContext("2d").drawImage(enemyImage,  250, enemyY) ;		
-
-		} // einde end
-	} // eine enemy.onload function
-
-}*/
