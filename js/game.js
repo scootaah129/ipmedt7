@@ -110,13 +110,18 @@ window.onload = function(){
 	enemyMessage_7.src = "img/enemy_livescore_7.png";	
 
 
+// geluid
+
+	window.message_geluid = new Audio("audio/geluid.mp3"); // buffers automatically when created
+
 //  enemy message array 
 
 	window.currentMessage = 0;
 	window.currentMessageDrawing = false;
 	window.messageY = 0;
+	window.messageX = 0;
 
-	window.messageHeight  = 140;
+	window.messageHeight  = 219;
 	window.messageWidth = 591;
 
 	window.messageActive = false;
@@ -131,11 +136,19 @@ window.onload = function(){
 	enemyMessages.push(enemyMessage_6);
 	enemyMessages.push(enemyMessage_7);
 
-
+	window.autoSpeed = 110;
+	window.currentSecSpeed = 0;
+	window.badSpeed = false;
+	window.speedPressed = false;
 //  vullen 	
 
+
 //  als toets word ingedrukt dan keyboardListener functie aanroepen
-	window.onkeydown = keyboardListener;
+	window.onkeydown = keyboardListenerKeydown;
+	window.onkeyup = keyboardListenerKeyUp;
+
+	window.onkeypress = keyboardListenerKeyPress;
+
 
 //  canvas game achtergrond plaatje
 	window.bg_canvasGameBackgroundImage = new Image();
@@ -144,7 +157,6 @@ window.onload = function(){
 //  Setinvals
 	window.startFunctionsInterval;
 	window.tijdSecondenInterval;
-
 
 //  game status 
 //	0 = begin scherm
@@ -182,10 +194,15 @@ function restartGame() {
 	autoPositie = 1;
 	tijdTeller = 0;
 	gameProgressie = 0;	
-	messageY = -219;
+	messageY = 401;
+	messageX = 57;
 	seconden = 0;
+	autoSpeed = 110;
 	startFunctionsInterval = setInterval(gameFunctions, 25);
 	tijdSecondenInterval = setInterval(everySecond, 1000);
+
+
+
 
 }
 
@@ -202,8 +219,10 @@ function endGame() {
 function gameFunctions() {
 
 	if(gameStatus == 1) {
+		tijdTeller++;
 		reDraw();
 		collisionDetection();
+		checkSpeed();
 	}
 }
 
@@ -232,7 +251,7 @@ function collisionDetection() {
 
 } // einde collisiondetection()
 
-function keyboardListener(e) {
+function keyboardListenerKeydown(e) {
 	// 37 links / 38 omhoog / 39 rechts / 40 beneden / 80 P / 27 ESC / t 84 / y 89
 
 	var code = e.keyCode ? e.keyCode : e.which;
@@ -248,6 +267,7 @@ function keyboardListener(e) {
 	        } 
 
 	    } else if (code === 39) { //key right
+
 	        if(autoPositie === 2) {
 	        	endGame();
 	        }
@@ -255,6 +275,25 @@ function keyboardListener(e) {
         		autoPositie++;	
         	}
 	   	}
+
+	   	if(code == 38) {
+
+	   		autoSpeed++;
+	   		speedPressed = true;
+	   	}
+	   	else if(code == 40) {
+
+	   		if(autoSpeed > 0) {
+	   			autoSpeed--;
+	   			speedPressed = true
+	   		}
+	   	}
+	   	else {
+			
+			speedPressed = false
+	   	}	
+
+	   	
    	}
 
     // P knop gedrukt
@@ -286,6 +325,21 @@ function keyboardListener(e) {
     }
 } // einde 
 
+function keyboardListenerKeyUp(e) {
+	var code = e.keyCode ? e.keyCode : e.which;
+
+   	if(code == 38 || code == 40) {
+   		speedPressed = false;
+		console.log("key up " + speedPressed);
+   	}
+
+}
+
+function keyboardListenerKeyPress(e) {
+	alert();
+	console.log(e);
+}
+
 
 // teken functies
 function reDraw() {
@@ -295,6 +349,7 @@ function reDraw() {
 	drawCar();
 	drawEnemies();
 	drawMessages();
+	drawSpeed();
 
 } // einde redraw()
 
@@ -359,7 +414,7 @@ function createEnemy(row) {
 function drawEnemies() {
 	
 	if(gameStatus == 1) {
-		tijdTeller++;
+
 
 		for(var i = 0; i < enemyArray.length; i++ ) {
 			
@@ -373,7 +428,7 @@ function drawEnemies() {
 
 				if(enemyArray[i].yPos <= 400 ) {
 					//volgPad(i);
-					console.log('enemy speed ' + enemyArray[0].xPos); 
+					//console.log('enemy speed ' + enemyArray[0].xPos); 
 					if( enemyArray[i].yPos % 30 == 0 ) {
 					//enemyArray[i].yPos == 20 ||enemyArray[i].yPos == 40 || enemyArray[i].yPos == 80 || enemyArray[i].yPos == 100 || enemyArray[i].yPos == 120 || enemyArray[i].yPos == 150 || enemyArray[i].yPos == 175 || enemyArray[i].yPos == 200 || enemyArray[i].yPos == 250 || enemyArray[i].yPos == 300) {
 
@@ -453,23 +508,24 @@ function drawMessages() {
 
 		if( currentMessageDrawing && messageActive) {
 
-			if(messageY < 0 && currentMessageDrawing) {
-				messageY += 5;
+			if(messageY >= 201 && currentMessageDrawing) {
+				messageY -= 8;
+
 			}
 
-			canvasContext.drawImage(enemyMessages[currentMessage], 57, messageY, messageWidth, messageHeight);
+			canvasContext.drawImage(enemyMessages[currentMessage], messageX, messageY, messageWidth, messageHeight);
 
 		} // einde if secopnden
 		else {
-			if(messageY >= -140 && currentMessageDrawing) {
+			if(messageY <= 401 && currentMessageDrawing) {
 
-				messageY -= 2;
-				canvasContext.drawImage(enemyMessages[currentMessage], 57, messageY , messageWidth, messageHeight);
+				messageY += 5;
+				canvasContext.drawImage(enemyMessages[currentMessage], messageX, messageY , messageWidth, messageHeight);
 
 			}
 			else {
 
-				messageY = -140;
+				messageY = 401;
 				currentMessageDrawing = false;
 			}
 		}
@@ -477,6 +533,13 @@ function drawMessages() {
 	} // einde if gamestatus == 1 
 
 }
+
+function drawSpeed() {
+
+	canvasContext.font="26px Arial";
+	canvasContext.fillText(autoSpeed,300,30);
+}
+
 
 function everySecond() {
 	spawnEnemies();
@@ -487,15 +550,16 @@ function secondenPlusPlus() {
 
 	if(gameStatus == 1) {
 
-		if(seconden % 5 == 0 && seconden > 4) {
+		if(seconden % 6 == 0 && seconden > 3) {
 			if(seconden > 6) {
 				currentMessage++;
 			}
-
+			playMusic();
 			messageActivesec = seconden;
 
 			messageActive = true;
 			currentMessageDrawing = true;
+
 		}
 
 		if(messageActive && seconden == messageActivesec + 2)
@@ -504,16 +568,65 @@ function secondenPlusPlus() {
 
 		}
 
+		if(badSpeed) {
+
+			currentSecSpeed++;
+		}
+
 		seconden++;
 
-	}
+	} // einde if gamestatus
+
+} // einden secondeplusplus
+
+function playMusic() {
+	
+	message_geluid.play();
 
 }
+
+
+function checkSpeed() {
+
+
+
+	if(gameStatus == 1 ) {
+
+
+		if(autoSpeed < 100 || autoSpeed > 120 ) {
+
+			badSpeed = true;
+
+		}
+
+		if ( 100 > autoSpeed > 120  ) {
+
+			badSpeed = false;
+			currentSecSpeed = 0;
+		}
+
+		if(currentSecSpeed > 2) {
+
+			endGame();
+
+		}
+
+		if(tijdTeller % 3 == 0 && !speedPressed) {
+
+			if(autoSpeed > 0) {
+				autoSpeed--;
+			}
+		}
+
+	} // einde if gamestatus == 1
+} // einde check speed
+
+
 
 function spawnEnemies() {
 
 	if(gameStatus == 1) {
-		if(seconden % 2 == 0) {
+		if(seconden % 1 == 0) {
 			var  randomnummer = Math.floor( (Math.random()*4) );
 			switch (randomnummer)
 			{
@@ -535,50 +648,7 @@ function spawnEnemies() {
 			case 4:
 			  createEnemy(0);
 			  break;
-		}
-	}
-}
-
-/*	// draw 0 en 1
-	if (seconden == 3 || seconden == 6 || seconden == 16 || seconden == 26 || seconden == 34) {
-
-		createEnemy(0);
-		createEnemy(1);
-	}
-
-
-	// draw 1 en 2
-	if (seconden == 2 || seconden == 12 || seconden == 20 || seconden == 24 || seconden == 30 ) {
-
-		createEnemy(1);
-		createEnemy(2);
-	}
-
-	// draw 0 en 2
-	if (seconden == 4 || seconden == 10 || seconden == 14 || seconden == 22 || seconden == 32) {
-
-		createEnemy(2);
-		createEnemy(0);
-	}
-
-	// draw 0
-
-	if(seconden == 0) {
-
-		createEnemy(0);
-	}
-
-	// draw 1
-	if (seconden == 8 || seconden == 28) {
-
-		createEnemy(1);
-	}
-
-	// draw 2
-
-	if (seconden == 18) {
-
-		createEnemy(2);
-	}*/
-
-}
+			} // einde switch
+		} // einde if seconden % 1 
+	} // einde if gamestatus == 1 
+} // einde spawnEnemies
