@@ -515,8 +515,8 @@ function drawMessages() {
 
 		if( currentMessageDrawing && messageActive) {
 
-			if(messageY <= -8 && currentMessageDrawing) {
-				messageY += 8;
+			if(messageY <= -1 && currentMessageDrawing) {
+				messageY += 10;
 
 			}
 
@@ -524,7 +524,7 @@ function drawMessages() {
 
 		} // einde if secopnden
 		else {
-			if(messageY >= -291 && currentMessageDrawing) {
+			if(messageY >= -290 && currentMessageDrawing) {
 
 				messageY -= 5;
 				canvasContext.drawImage(enemyMessages[currentMessage], messageX, messageY , messageWidth, messageHeight);
@@ -532,7 +532,7 @@ function drawMessages() {
 			}
 			else {
 
-				messageY = -291;
+				messageY = -290;
 				currentMessageDrawing = false;
 			}
 		}
@@ -582,8 +582,8 @@ function secondenPlusPlus() {
 
 	if(gameStatus == 1) {
 
-		if(seconden % 8 == 0 && seconden > 3) {
-			if(seconden > 9) {
+		if(seconden % 6 == 0 && seconden > 3) {
+			if(seconden > 7) {
 				currentMessage++;
 			}
 			playMusic();
@@ -594,7 +594,7 @@ function secondenPlusPlus() {
 
 		}
 
-		if(messageActive && seconden == messageActivesec + 4)
+		if(messageActive && seconden == messageActivesec + 2)
 		{
 			messageActive = false;
 
