@@ -334,21 +334,21 @@ function createEnemy(row) {
 
 	if(enemy.row == 0) {
 		enemy.xPos = 150;
-		enemy.yPos = 0; 
+		enemy.yPos = 60; 
 
 	} else if (enemy.row == 1){
 		enemy.xPos = 350;
-		enemy.yPos = 0; 
+		enemy.yPos = 60; 
 
 	} else if (enemy.row == 2) {
 		enemy.xPos = 546;
-		enemy.yPos = 0; 
+		enemy.yPos = 60; 
 
 	}
 
 	enemy.speed = 1;
 
-	enemy.scaleFactor = 0.3;
+	enemy.scaleFactor = 0.5;
 	enemy.levend = true;
 
 	enemyArray.push(enemy);
@@ -373,16 +373,26 @@ function drawEnemies() {
 
 				if(enemyArray[i].yPos <= 400 ) {
 					//volgPad(i);
-					console.log('enemy speed ' + enemyArray[0].speed); 
+					console.log('enemy speed ' + enemyArray[0].xPos); 
 					if( enemyArray[i].yPos % 30 == 0 ) {
 					//enemyArray[i].yPos == 20 ||enemyArray[i].yPos == 40 || enemyArray[i].yPos == 80 || enemyArray[i].yPos == 100 || enemyArray[i].yPos == 120 || enemyArray[i].yPos == 150 || enemyArray[i].yPos == 175 || enemyArray[i].yPos == 200 || enemyArray[i].yPos == 250 || enemyArray[i].yPos == 300) {
 
 						enemyArray[i].speed++;
 					}
 
+					if(enemyArray[i].row == 0 ) {//|| enemyArray[i].row == 2) {
+
+						if( enemyArray[i].yPos % 10 == 0 ) {
+						//enemyArray[i].yPos == 20 ||enemyArray[i].yPos == 40 || enemyArray[i].yPos == 80 || enemyArray[i].yPos == 100 || enemyArray[i].yPos == 120 || enemyArray[i].yPos == 150 || enemyArray[i].yPos == 175 || enemyArray[i].yPos == 200 || enemyArray[i].yPos == 250 || enemyArray[i].yPos == 300) {
+
+							enemyArray[i].xPos--;
+						}
+					}
+
 					enemyArray[i].yPos+= enemyArray[i].speed;
 				} // einde if ypos >= 400
 				else {
+
 					enemyArray[i].levend = false;
 					//enemyArray.splice(i, 1);
 				}
@@ -441,25 +451,13 @@ function drawMessages() {
 
 	if(gameStatus == 1) {
 
-		if( currentMessageDrawing && messageActive
-/*
-			 seconden >= 3 && seconden <= 6 || 
-			seconden >= 8 && seconden <= 12 || 
-			seconden >= 14 && seconden <= 16 ||
-			seconden >= 18 && seconden <= 20 ||
-			seconden >= 22 && seconden <= 23 ||
-			seconden >= 25 && seconden <= 28 ||
-			seconden >= 30 && seconden <= 31 ||
-			seconden >= 33 && seconden <= 36*/
+		if( currentMessageDrawing && messageActive) {
 
-			) {
+			if(messageY < 0 && currentMessageDrawing) {
+				messageY += 5;
+			}
 
-
-				if(messageY < 0 && currentMessageDrawing) {
-					messageY += 5;
-				}
-
-				canvasContext.drawImage(enemyMessages[currentMessage], 57, messageY, messageWidth, messageHeight);
+			canvasContext.drawImage(enemyMessages[currentMessage], 57, messageY, messageWidth, messageHeight);
 
 		} // einde if secopnden
 		else {
