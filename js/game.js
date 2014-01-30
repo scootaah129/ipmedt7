@@ -240,8 +240,8 @@ function collisionDetection() {
 			if (enemyArray[i].yPos < autoPos.yPos + 30) {
 			// if als er botsing is
 				if(  enemyArray[i].yPos + enemyArray[i].scaleFactor*enemyHeight  >= autoPos.yPos  && enemyArray[i].xPos <= (autoPos.xPos + 61) && enemyArray[i].xPos + (enemyArray[i].scaleFactor * enemyWidth) >= (autoPos.xPos + 61)  ) {
-					gameStatus = 3;
-					drawEindScherm();
+		        	console.log("collision");
+					endGame();
 				} // als er botsing is geweest
 			}
 
@@ -261,6 +261,7 @@ function keyboardListenerKeydown(e) {
 	        if(autoPositie === 0) {
 
 	        	endGame();
+	        	console.log("teveel naar lnks");
 	        }
 	        if( autoPositie === 1 || autoPositie === 2) {
 	    		autoPositie--;	
@@ -269,6 +270,7 @@ function keyboardListenerKeydown(e) {
 	    } else if (code === 39) { //key right
 
 	        if(autoPositie === 2) {
+	        	console.log("teveel naar rechts");
 	        	endGame();
 	        }
 	        if( autoPositie === 0 || autoPositie === 1) {
@@ -310,6 +312,7 @@ function keyboardListenerKeydown(e) {
 
     // ESC knop gedrukt
     if(code == 27) {
+
     	endGame();
     	restartGame();
     }
@@ -508,7 +511,7 @@ function drawMessages() {
 
 		if( currentMessageDrawing && messageActive) {
 
-			if(messageY >= 201 && currentMessageDrawing) {
+			if(messageY >= 280 && currentMessageDrawing) {
 				messageY -= 8;
 
 			}
@@ -517,7 +520,7 @@ function drawMessages() {
 
 		} // einde if secopnden
 		else {
-			if(messageY <= 401 && currentMessageDrawing) {
+			if(messageY <= 400 && currentMessageDrawing) {
 
 				messageY += 5;
 				canvasContext.drawImage(enemyMessages[currentMessage], messageX, messageY , messageWidth, messageHeight);
@@ -525,7 +528,7 @@ function drawMessages() {
 			}
 			else {
 
-				messageY = 401;
+				messageY = 400;
 				currentMessageDrawing = false;
 			}
 		}
@@ -539,7 +542,6 @@ function drawSpeed() {
 	canvasContext.font="26px Arial";
 	canvasContext.fillText(autoSpeed,300,30);
 }
-
 
 function everySecond() {
 	spawnEnemies();
@@ -585,30 +587,24 @@ function playMusic() {
 
 }
 
-
 function checkSpeed() {
 
-
-
 	if(gameStatus == 1 ) {
-
 
 		if(autoSpeed < 100 || autoSpeed > 120 ) {
 
 			badSpeed = true;
-
 		}
 
-		if ( 100 > autoSpeed > 120  ) {
-
+		if ( autoSpeed > 100 && autoSpeed < 120  ) {
+			console.log(badSpeed);
 			badSpeed = false;
 			currentSecSpeed = 0;
 		}
 
 		if(currentSecSpeed > 2) {
-
+        	console.log("currentSecSpeed");
 			endGame();
-
 		}
 
 		if(tijdTeller % 3 == 0 && !speedPressed) {
@@ -620,8 +616,6 @@ function checkSpeed() {
 
 	} // einde if gamestatus == 1
 } // einde check speed
-
-
 
 function spawnEnemies() {
 
