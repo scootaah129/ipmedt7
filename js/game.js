@@ -12,13 +12,10 @@ $( document ).ready(function() {
 		pressKeys[evt.keyCode] = false;
 
 		if(evt.keyCode == 37) {
-
 			goLeft();
-
 		}
 
 		if(evt.keyCode == 39) {
-
 			goRight();
 		}
     
@@ -59,15 +56,19 @@ window.onload = function(){
 
 //  auto links x en y
 	window.autoLinksx = 90;
-	window.autoLinksy = 290;
 
 //  auto midden x en y
 	window.autoMiddenx = 295;
-	window.autoMiddeny = 290;
 
 //  auto rechts x en y
 	window.autoRechtsx = 500;
-	window.autoRechtsy = 290;
+
+	window.autoY = 290;
+
+	window.autoScalefactor = 1;
+
+	window.autoWidth = 122;
+	window.autoHeight = 89;
 
 //  auto in het midden
 	window.autoPositie = 1;
@@ -279,11 +280,15 @@ function checkKeyCodes() {
 		if(pressKeys[38]) {
 
 			autoSpeed++;
+			autoY-=3;
+			autoScalefactor -= 0.01;
 		}
 
 		if(pressKeys[40]) {
 
 			autoSpeed--;
+			autoY+=3;
+			autoScalefactor-= 0.01; 
 		}
 
 		    // P knop gedrukt
@@ -355,20 +360,20 @@ function drawCar() {
 	// auto links
 	if (autoPositie == 0) {
 		autoPos.xPos = autoLinksx;
-		autoPos.yPos = autoLinksy;
+		autoPos.yPos = autoY;
 
 	} // auto midden
 	else if (autoPositie == 1) {
 		autoPos.xPos = autoMiddenx;
-		autoPos.yPos = autoMiddeny;
+		autoPos.yPos = autoY;
 
 	} // auto rechts
 	else if (autoPositie == 2) {
 		autoPos.xPos = autoRechtsx;
-		autoPos.yPos = autoRechtsy;
+		autoPos.yPos = autoY;
 	}
-	
-	canvasContext.drawImage(auto, autoPos.xPos, autoPos.yPos);
+															
+	canvasContext.drawImage(auto, autoPos.xPos - ((autoWidth * autoScalefactor) / 2), autoPos.yPos, autoWidth * autoScalefactor, autoHeight * autoScalefactor);
 } // einde drawCar();
 
 // maakt nieuwe enemy
@@ -604,6 +609,8 @@ function checkSpeed() {
 
 			if(autoSpeed > 0) {
 				autoSpeed--;
+				autoY+=3;
+				autoScalefactor += 0.01
 			}
 		}
 
@@ -612,7 +619,7 @@ function checkSpeed() {
 
 function spawnEnemies() {
 
-	if(gameStatus == 1) {
+	if(gameStatus == 2) {
 		if(seconden % 2 == 0) {
 			var randomnummer = Math.floor( (Math.random()*4) );
 			switch (randomnummer)
